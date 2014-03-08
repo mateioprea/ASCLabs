@@ -1,5 +1,6 @@
 from threading import Thread
-
+import threading
+import time
 #a) Folosind clasa Thread, creati 10 threaduri care afiseaza un mesaj de forma:
 #    Hello, I'm thread id_thread
 
@@ -27,12 +28,14 @@ from threading import Thread
 
 def afisare_concurrent_code(**threads):
 	for i in threads.keys():
-		print i, ':', threads[i]
+		print i, ':', threads[i], ':' , str(threading.current_thread().getName())
+		time.sleep(1)
 
 thread_list = []
 
 for i in xrange (10):
-	thread = Thread(target = afisare_concurrent_code( thread_index = i, message = "Hello there"))
+	bla= { "number": i, "msg": "Hello" }
+	thread = Thread(target = afisare_concurrent_code, kwargs=bla, name=str(i))
 	thread.start()
 	thread_list.append(thread)
 

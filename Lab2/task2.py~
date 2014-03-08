@@ -3,31 +3,40 @@ from threading import Lock, Thread
 from time import sleep
 from random import choice, randint
 import sys
+import threading
 lista = [1,2,3,4,5,6,7,8,9,10]
 lista2= []
 global_var = 0
 thread_list = []
 
 def functie(l1,l2,lock):
+	sleep(randint(1, 4))
 	fac_append=(choice(l1))
 	global global_var
 	lock.acquire()
-	global_var+=fac_append
-	lock.release()
 	l2.append(fac_append)
+	global_var+=fac_append
+	print str(threading.current_thread().getName())
+	print l2
+	print global_var
+	lock.release()
+	
 	
 
 for i in xrange(int(sys.argv[1])):
-	sleep(randint(1, 4))
 	thread = Thread(target = functie, args = (lista,lista2,Lock()))
 	thread.start()
-	print thread.getName()
-	print lista2
-	print global_var
 	thread_list.append(thread)
 
 for i in xrange(len(thread_list)):
 	thread_list[i].join()
+
+print "FINAL"
+sumf=0
+for i in lista2:
+	sumf+=i
+print "Final" + sumf
+print global_var
 
 # Scrieti un program in care mai multe threaduri (numarul lor este dat ca
 # argument in linia de comanda) aleg random un element dintr-o lista comuna si

@@ -5,8 +5,7 @@ import sys
 
 queue = []
 lock = Lock()
-
-def producator(nr,sem):
+def producator(nr,sem,sem2):
 	number = range(1000)
 	global queue
 	while True:
@@ -14,34 +13,36 @@ def producator(nr,sem):
 		sem.acquire()
 		print "Thread-ul", nr, " acceseaza"
     		time.sleep(random.randint(1, 4))
-    		print "Thread-ul", nr, " a terminat"
 		queue.append(num)
 		print "Produced", num
-		sem.release()
+		sem2.release()
+		print "Thread-ul", nr, " a terminat"
 		time.sleep(random.random())
 
-def consumator(nr,sem):
+def consumator(nr,sem,sem2):
 	global queue
 	while True:
-		sem.acquire()
+		sem2.acquire()
 		print "Thread-ul", nr, " acceseaza"
     		time.sleep(random.randint(1, 4))
-    		print "Thread-ul", nr, " a terminat"
 		if not queue:
 			print "Nothing in the queue"
-		num = queue.pop(0)
-		print "Consumed", num
-		sem.release()
+		else:		
+			num = queue.pop(0)
+			print "Consumed", num
+			sem.release()
+			print "Thread-ul", nr, " a terminat"
 		time.sleep(random.random())
 
 thread_list = []
-semafor = Semaphore(value = 1)
+semafor = Semaphore(value = 5)
+semafor2 = Semaphore(value = 0)
 
 random.seed()
 
 for i in xrange(int(sys.argv[1])):
-	thread_prod = Thread(target=producator, args = (i,semafor));
-	thread_cons = Thread(target=consumator, args = (i,semafor));
+	thread_prod = Thread(target=producator, args = (i,semafor,semafor2));
+	thread_cons = Thread(target=consumator, args = (i,semafor,semafor2));
 	thread_prod.start()
 	thread_cons.start()
 	thread_list.append(thread_prod)
